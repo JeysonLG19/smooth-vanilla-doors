@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(levilauncher_android_mod_template LANGUAGES CXX)
+project(smooth_vanilla_doors LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
