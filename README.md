@@ -1,160 +1,111 @@
-# LeviLauncher Android Mod Template
+Smooth Vanilla Doors
 
-This is a CMake template for LeviLauncher Android native mods. It includes a
-ready-to-use `manifest.json`, CMake project, minimal `ClangeMeMod`, packaging script,
-typed config generation, and GitHub Actions workflow.
+Animated vanilla doors and trapdoors for Minecraft Bedrock Edition Android.
 
-## Project Layout
+Smooth Vanilla Doors is an experimental native modification for LeviLauncher, targeting Minecraft Bedrock 1.26.621.
 
-```text
-.
+Project objective
+
+The objective is to investigate and implement smooth animations for the original Minecraft doors and trapdoors.
+
+The project aims to preserve:
+
+- Original vanilla block identifiers.
+- Original textures and geometry.
+- Original collision and interaction behavior.
+- Redstone functionality.
+- Vanilla block placement and orientation.
+
+Important: The current project is an initial native mod scaffold. Vanilla block animations have not yet been implemented.
+
+Target platform
+
+Component| Target
+Minecraft Bedrock| 1.26.621
+Platform| Android
+Architecture| arm64-v8a
+Launcher| LeviLauncher
+Native language| C++20
+Build system| CMake
+Native SDK| Preloader Android
+
+Planned features
+
+Doors
+
+- Smooth opening animation.
+- Smooth closing animation.
+- Correct hinge rotation.
+- Support for all vanilla door materials.
+
+Trapdoors
+
+- Smooth 90-degree rotation.
+- Correct orientation and pivot.
+- Support for all vanilla trapdoor materials.
+
+Animation settings
+
+Setting| Target
+Opening angle| 90 degrees
+Closing angle| 90 degrees
+Duration| 300 ms
+Interpolation| Ease In-Out
+Target frame rate| 60 FPS
+
+These are development targets, not implemented features.
+
+Development roadmap
+
+1. Create and compile the native mod.
+2. Verify compatibility with LeviLauncher.
+3. Identify the vanilla door rendering functions.
+4. Investigate safe rendering hooks for Minecraft 1.26.621.
+5. Implement a proof of concept using an original oak door.
+6. Extend support to all doors and trapdoors.
+7. Test redstone, collisions, paired doors and multiplayer behavior.
+
+Project structure
+
+smooth-vanilla-doors/
 ├── CMakeLists.txt
 ├── manifest.json.in
-├── scripts/package.ps1
-└── src
-    ├── config_generator.cpp
-    ├── main.cpp
-    └── mod
-        ├── Config.h
-        ├── Config.cpp
-        ├── MyMod.cpp
-        └── MyMod.h
-```
+├── scripts/
+│   └── package.ps1
+├── src/
+│   ├── main.cpp
+│   ├── config_generator.cpp
+│   └── mod/
+│       ├── Config.h
+│       ├── Config.cpp
+│       ├── MyMod.cpp
+│       └── MyMod.h
+└── .github/
+    └── workflows/
+        └── build.yml
 
-## Requirements
+Compilation
 
-- Android SDK
-- Android NDK 28.2.13676358 or a compatible version
-- CMake 3.22+
-- Ninja
-- PowerShell 7+, or Windows PowerShell
+The project uses GitHub Actions to compile the native Android module without requiring a local computer.
 
-The CMake project fetches preloader-android release `0.2.2` from
-<https://github.com/LiteLDev/preloader-android> automatically.
+The expected output is a LeviLauncher ".levipack" package.
 
-## Supported SDK Surface
+Safety and compatibility
 
-Use only public headers from the SDK `include` directory:
+Native modifications can cause crashes if internal game functions or signatures change.
 
-```cpp
-#include <pl/Mod.hpp>
-#include <pl/Config.hpp>
-#include <pl/ModMenu.hpp>
-#include <pl/Input.hpp>
-#include <pl/memory/Hook.hpp>
-#include <pl/memory/Patch.hpp>
-#include <pl/memory/Signature.hpp>
-```
+Always back up Minecraft worlds before testing experimental modifications.
 
-Do not add preloader `src` directories to your include path. This template uses
-the current C++ API with `PL_REGISTER_MOD`.
+Project status
 
-## Build
+Version: 0.1.0
 
-```powershell
-$env:ANDROID_HOME = "C:/Users/<you>/AppData/Local/Android/Sdk"
+Development status: Initial native scaffold.
 
-./scripts/package.ps1 -Abi arm64-v8a
-```
+Animation implementation: Pending.
 
-Build both Android architectures:
+Target Minecraft version: 1.26.621.
 
-```powershell
-./scripts/package.ps1 -Abi all
-```
+---
 
-After the build finishes, import the generated `.levipack` into LeviLauncher.
-
-## Customize Mod Info
-
-Common CMake options:
-
-```powershell
-cmake -S . -B build-arm64-v8a `
-  -G Ninja `
-  -DCMAKE_TOOLCHAIN_FILE="$env:ANDROID_HOME/ndk/28.2.13676358/build/cmake/android.toolchain.cmake" `
-  -DANDROID_ABI=arm64-v8a `
-  -DANDROID_PLATFORM=android-28 `
-  -DANDROID_STL=c++_shared `
-  -DMOD_ID=clange_me `
-  -DMOD_NAME="Clange Me Mod" `
-  -DMOD_AUTHOR="clange_me" `
-  -DMOD_VERSION=0.1.0 `
-  -DMOD_LIBRARY_NAME=clange_me `
-  -DMOD_MINECRAFT_VERSIONS='["1.21.*"]' `
-  "-DMOD_ICON="
-
-cmake --build build-arm64-v8a --target levi_package
-```
-
-## Lifecycle
-
-Write your mod logic in [src/mod/MyMod.cpp](src/mod/MyMod.cpp):
-
-```cpp
-ClangeMeMod::ClangeMeMod() : mSelf(*ll::mod::NativeMod::current()) {}
-
-bool ClangeMeMod::load() {
-    getSelf().getLogger().debug("Loading...");
-    return true;
-}
-
-bool ClangeMeMod::enable() {
-    getSelf().getLogger().debug("Enabling...");
-    return true;
-}
-
-bool ClangeMeMod::disable() {
-    getSelf().getLogger().debug("Disabling...");
-    return true;
-}
-
-bool ClangeMeMod::unload() {
-    getSelf().getLogger().debug("Unloading...");
-    return true;
-}
-```
-
-`ll::mod::NativeMod::current()` is available while the mod instance is being
-registered, so the constructor can keep the loader-provided `mSelf` reference.
-Register one long-lived mod object with `PL_REGISTER_MOD`.
-
-Lifecycle meaning:
-
-1. `load()` runs when the mod is loaded.
-2. `enable()` runs before the game starts.
-3. `disable()` runs when the game is closing.
-4. `unload()` runs during final mod cleanup.
-
-Common APIs:
-
-- `getSelf().getLogger()`
-- `getSelf().getId()`
-- `getSelf().getName()`
-- `getSelf().getModDir()`
-- `getSelf().getDataDir()`
-- `getSelf().getConfigDir()`
-- `getSelf().getResourceDir()`
-
-Use `getSelf().getDataDir()` and `getSelf().getConfigDir()` for your mod's own data and config
-files.
-
-## Typed Config
-
-The template includes a minimal typed config in `src/mod/Config.h`:
-
-```cpp
-struct ModConfig {
-    int version = 1;
-    bool enabled = true;
-    std::string message = "Hello from clange_me";
-};
-```
-
-`ClangeMeMod::load()` uses `pl::config::ConfigFile<ModConfig>` to create and update
-`config/config.json`. The package script runs `src/config_generator.cpp` before
-Android compilation and includes generated `config.json` and
-`config.schema.json` in the `.levipack`.
-
-Keep this config small for your starter mod. Move larger examples, advanced
-schema coverage, or behavior tests into a separate project.
+Developed by JeysonLG19.
