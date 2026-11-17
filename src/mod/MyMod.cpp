@@ -1,71 +1,122 @@
+
 #include "mod/MyMod.h"
 
 #include <filesystem>
 
 #include <pl/Mod.hpp>
 
-namespace clange_me {
+namespace smooth_vanilla_doors {
 
-ClangeMeMod &ClangeMeMod::instance() {
-    static ClangeMeMod instance;
+SmoothVanillaDoorsMod &SmoothVanillaDoorsMod::instance() {
+    static SmoothVanillaDoorsMod instance;
     return instance;
 }
 
-ClangeMeMod::ClangeMeMod() : mSelf(*ll::mod::NativeMod::current()) {}
+SmoothVanillaDoorsMod::SmoothVanillaDoorsMod()
+    : mSelf(*ll::mod::NativeMod::current()) {
+}
 
-bool ClangeMeMod::load() {
+bool SmoothVanillaDoorsMod::load() {
     auto &self = getSelf();
-    self.getLogger().debug("Loading...");
+
+    self.getLogger().debug("Loading Smooth Vanilla Doors...");
 
     std::error_code ec;
-    std::filesystem::create_directories(self.getDataDir(), ec);
+
+    std::filesystem::create_directories(
+        self.getDataDir(), ec
+    );
+
     if (ec) {
-        self.getLogger().error("Failed to create data directory {}: {}", self.getDataDir().string(),
-                               ec.message());
+        self.getLogger().error(
+            "Failed to create data directory: {}",
+            ec.message()
+        );
         return false;
     }
 
-    std::filesystem::create_directories(self.getConfigDir(), ec);
+    std::filesystem::create_directories(
+        self.getConfigDir(), ec
+    );
+
     if (ec) {
-        self.getLogger().error("Failed to create config directory {}: {}",
-                               self.getConfigDir().string(), ec.message());
+        self.getLogger().error(
+            "Failed to create config directory: {}",
+            ec.message()
+        );
         return false;
     }
 
     mConfigFile.emplace();
+
     if (!mConfigFile->load()) {
-        self.getLogger().warn("Failed to load typed config");
+        self.getLogger().error(
+            "Failed to load Smooth Vanilla Doors configuration"
+        );
         return false;
     }
+
     mConfig = mConfigFile->value();
 
-    self.getLogger().info("Loaded {} from {}", self.getName(), self.getModDir().string());
+    self.getLogger().info(
+        "Smooth Vanilla Doors loaded successfully"
+    );
+
     return true;
 }
 
-bool ClangeMeMod::enable() {
+bool SmoothVanillaDoorsMod::enable() {
     auto &self = getSelf();
-    self.getLogger().debug("Enabling...");
+
+    self.getLogger().debug(
+        "Enabling Smooth Vanilla Doors..."
+    );
+
     if (!mConfig.enabled) {
-        self.getLogger().info("clange_me is disabled by config");
+        self.getLogger().info(
+            "Smooth Vanilla Doors is disabled in config"
+        );
         return true;
     }
 
-    self.getLogger().info("Config message: {}", mConfig.message);
+    self.getLogger().info(
+        "Door animation setting: {}",
+        mConfig.animateDoors
+    );
+
+    self.getLogger().info(
+        "Trapdoor animation setting: {}",
+        mConfig.animateTrapdoors
+    );
+
+    self.getLogger().info(
+        "Animation duration: {} ms",
+        mConfig.animationDurationMs
+    );
+
+    self.getLogger().warn(
+        "Vanilla renderer hooks are not implemented yet."
+    );
+
     return true;
 }
 
-bool ClangeMeMod::disable() {
-    getSelf().getLogger().debug("Disabling...");
-    // Undo enable-time state here.
+bool SmoothVanillaDoorsMod::disable() {
+    getSelf().getLogger().debug(
+        "Disabling Smooth Vanilla Doors..."
+    );
+
     return true;
 }
 
-bool ClangeMeMod::unload() {
-    getSelf().getLogger().debug("Unloading...");
-    // Release load-time resources here.
+bool SmoothVanillaDoorsMod::unload() {
+    getSelf().getLogger().debug(
+        "Unloading Smooth Vanilla Doors..."
+    );
+
     mConfigFile.reset();
+
     return true;
 }
 
-} // namespace clange_me
+} // namespace smooth_vanilla_doors
