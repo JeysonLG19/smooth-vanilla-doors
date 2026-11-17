@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <optional>
@@ -6,25 +7,27 @@
 
 #include <pl/Mod.hpp>
 
-namespace clange_me {
+namespace smooth_vanilla_doors {
 
-class ClangeMeMod {
-  public:
-    static ClangeMeMod &instance();
+class SmoothVanillaDoorsMod {
+public:
+    static SmoothVanillaDoorsMod &instance();
 
-    ClangeMeMod();
+    SmoothVanillaDoorsMod();
 
-    [[nodiscard]] ll::mod::NativeMod &getSelf() const { return mSelf; }
+    [[nodiscard]] ll::mod::NativeMod &getSelf() const {
+        return mSelf;
+    }
 
     bool load();
     bool enable();
     bool disable();
     bool unload();
 
-  private:
+private:
     ll::mod::NativeMod &mSelf;
     ModConfig mConfig;
     std::optional<pl::config::ConfigFile<ModConfig>> mConfigFile;
 };
 
-} // namespace clange_me
+} // namespace smooth_vanilla_doors
